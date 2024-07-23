@@ -3,6 +3,17 @@
 // US Government Users Restricted Rights - Use, duplication or disclosure
 // restricted by GSA ADP Schedule Contract with IBM Corp.
 
+// Get command line arguments
+const [, , , cluster, namespace] = process.argv
+
+if (cluster == "SaaS") {
+  const SaaS = true
+  const region = namespace
+}
+else {
+  const SaaS = false
+}
+
 const assert = require('assert')
 const {resolve} = require('path')
 const axios = require('axios')
