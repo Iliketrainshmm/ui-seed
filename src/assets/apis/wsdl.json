@@ -1,0 +1,29 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "_NameSpace_",
+    "x-ibm-name": "_namespace_",
+    "version": "1.0.0"
+  },
+  "x-ibm-configuration": {
+    "gateway": "datapower-api-gateway",
+    "cors": {
+      "enabled": true
+    }
+  },
+  "basePath": "/_NameSpace_",
+  "securityDefinitions": {
+    "clientID": {
+      "type": "apiKey",
+      "description": "",
+      "in": "header",
+      "name": "X-IBM-Client-Id",
+      "x-key-type": "client_id"
+    }
+  },
+  "security": [
+    {
+      "clientID": []
+    }
+  ]
+}

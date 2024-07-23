@@ -1,0 +1,27 @@
+{
+  "name": "ui-seed",
+  "version": "1.0.0",
+  "description": "seed stack with draft APIs, draft products, and much more.",
+  "main": "src/index.js",
+  "bin": {
+    "seed": "./bin/seed.js"
+  },
+  "scripts": {
+    "seed": "node ./bin/seed",
+    "test": "jest"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "chance": "^1.1.11",
+    "colors": "^1.4.0",
+    "commander": "^5.1.0",
+    "dotenv": "^8.2.0",
+    "faker": "^4.1.0",
+    "lodash": "^4.17.15",
+    "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "eslint": "^7.3.1",
+    "jest": "^27.4.7"
+  }
+}
