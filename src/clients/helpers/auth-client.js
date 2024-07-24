@@ -97,10 +97,7 @@ async function signIn(
   providerOrg,
   catalog
 ) {
-  assertRequired({app})
-  if (SaaS == false) {
-    assertRequired({username, password})
-  }
+  assertRequired({app, username, password})
   isValidApp(app, 'authClient.getIdProviders')
   log.debug(`Signing into ${app}`)
   const {name: defaultIdp} =
@@ -118,18 +115,13 @@ async function signIn(
   const clientSecret =
     app === 'consumer' ? consumer_client_secret : client_secret
 
-  let data = {
+  const data = {
     username,
     password,
     realm: `${idpScope}/${idProvider || defaultIdp}`,
     client_id: clientId,
     client_secret: clientSecret,
     grant_type: 'password',
-  }
-
-  if (SaaS == true) {
-    delete data.username
-    delete data.password
   }
 
   const endpoint = app === 'consumer' ? '/consumer-api/token' : '/api/token'
