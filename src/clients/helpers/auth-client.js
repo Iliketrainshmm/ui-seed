@@ -130,7 +130,6 @@ async function signIn(
   if (SaaS == true) {
     delete data.username
     delete data.password
-    data.apikey = 
   }
 
   const endpoint = app === 'consumer' ? '/consumer-api/token' : '/api/token'
