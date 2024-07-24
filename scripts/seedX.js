@@ -83,6 +83,7 @@ module.exports = async () => {
   const apisToPopulate = []
   const adminUsername = `${admin.username}`
 
+  // hvhff
   if (!skipAdmin)
     await setupAdmin(
       admin.username,
@@ -162,6 +163,9 @@ module.exports = async () => {
   }
 
   await apic.signOut()
+
+// bghfuf
+
   log.info(`Signing into manager with ${user_name}:${manager.password}`)
   await apim.signIn(user_name, manager.password)
 
