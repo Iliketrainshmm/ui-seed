@@ -88,6 +88,8 @@ function setAuthToken(app, token) {
  *  provider of the app is used if none provided
  * @param {String} [providerOrg] provider org name (if app == consumer)
  * @param {String} [catalog] catalog name (if app == consumer)
+ * @param {String} [SaaS] SaaS mode (if SaaS == true)
+ * @param {String} [apikey] apikey (if SaaS == true)
  */
 async function signIn(
   app,
@@ -102,6 +104,9 @@ async function signIn(
   assertRequired({app})
   if (SaaS == false) {
     assertRequired({username, password})
+  }
+  else {
+    assertRequired({apikey})
   }
   isValidApp(app, 'authClient.getIdProviders')
   log.debug(`Signing into ${app}`)

@@ -165,7 +165,7 @@ module.exports = async () => {
   }
 
   log.info(`Signing into manager with ${user_name}:${manager.password}`)
-  await apim.signIn(user_name, manager.password)
+  await apim.signIn(user_name, manager.password, '', SaaS, manager.apikey)
 
   log.info('Consenting to cloud analytics')
   await apim.consentCloudAnalytics(orgName)

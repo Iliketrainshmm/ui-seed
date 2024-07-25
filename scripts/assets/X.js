@@ -1,5 +1,5 @@
 module.exports = {
-  providerOrg: 'ibm', // see point 1 below
+  providerOrg: 'api-connect-7g', // see point 1 below
   prefix: 'API Connect', // # i.e [API Connect] [Generated Name] API (Optional)
   fastMode: true, // see point 2 below (Optional) [default: true]
   skipAdmin: false, // see point 4 below (Optional) [default: false]
@@ -29,6 +29,7 @@ module.exports = {
       username: 'steve', // User with the username provided will be created if not found
       password: '7iron-hide',
       email: 'example@ibm.com',
+      apikey: '439181ac-0d2c-43dc-a176-20219fd2a178', // SaaS mode only
     },
     consumer: {
       numberofConsumers: 2, // Creates consumer org members based off the below details

@@ -1616,9 +1616,11 @@ async function managerSetAuthToken(token) {
  * @param {String} password password
  * @param {String} [idProvider] identity provider of user, default identify
  *  provider of the app is used if none provided
+ * @param {String} [SaaS] SaaS mode (if SaaS == true)
+ * @param {String} [apikey] apikey (if SaaS == true)
  */
-async function managerSignIn(username, password, idProvider) {
-  return signIn('manager', username, password, idProvider)
+async function managerSignIn(username, password, idProvider, SaaS, apikey) {
+  return signIn('manager', username, password, idProvider, '', '', '', SaaS, apikey)
 }
 
 /**
