@@ -72,85 +72,98 @@ module.exports = async () => {
   const apisToPopulate = []
   const adminUsername = `${admin.username}`
 
-  if (!skipAdmin)
-    await setupAdmin(
-      admin.username,
-      admin.password,
-      defaultAdminPassword,
-      adminEmail,
-      mailServer,
-      gatewayType
-    )
-  options.set('strict')
-  log.info(`Signing into admin with ${admin.username}:${admin.password}`)
-  await apic.signIn(admin.username, admin.password)
-  if (cleanOrg) {
-    log.info(`Deleting provider org ${orgName} if exists`)
-    await tryCatch(async () => {
-      const org = await apic.getProviderOrg(orgName)
-      await apic.delete([org])
-    })
+  const [, , , cluster, namespace] = process.argv
+
+  if (cluster == "SaaS") {
+    SaaS = true
+    region = namespace
+  }
+  else {
+    SaaS = false
   }
 
-  log.info(`Ensuring provider org ${orgTitle} does not already exist`)
-  const orgRes = await tryCatch(apic.getProviderOrg, orgName)
-  const addOrg = orgRes.err && orgRes.err.toString().includes('"status":404')
-  const user_name = `${manager.username}`
-
-  if (addOrg) {
-    log.info(`Checking if user "${user_name}" exists in provider scope`)
-    const user = await tryCatch(apic.getUser, 'manager', user_name)
-    const addUser = user.err && user.err.toString().includes('"status":404')
-    if (addUser) {
-      log.info(`Adding user ${user_name}`)
-      let managerEmail = `${user_name}+${user_name}@apic.ibm.com`
-      if (manager.email && manager.email !== '') {
-        managerEmail = manager.email
-      }
-      const userAdded = await apic.addUser(
-        'manager',
-        user_name,
-        user_name,
-        user_name,
-        managerEmail,
-        manager.password
+  if (SaaS == false) {
+    if (!skipAdmin)
+      await setupAdmin(
+        admin.username,
+        admin.password,
+        defaultAdminPassword,
+        adminEmail,
+        mailServer,
+        gatewayType
       )
-      if (!userAdded) log.throw(`Failed to add user ${user_name}`)
-    } else if (user.err) log.throw(user)
-    log.info(`Creating provider org ${orgTitle}`)
-    const addedOrg = await apic.createProviderOrg(orgTitle, user_name)
-    if (!addedOrg) log.throw(`Failed to create provider org ${orgTitle}`)
-  } else if (orgRes.err) log.throw(orgRes)
-
-  options.set('strict', false)
-  const oAuthPrefix = prefix || orgTitle
-  await concurrent(
-    apic.createOAuthProvider, // shared - admin scope (todo: move to manager scope)
-    (i) => {
-      if (randNum(0, 1) === 0)
-        return [
-          `${oAuthPrefix} Third-Party OAuth Provider ${i}`,
-          'third-party',
-        ]
-      return [`${oAuthPrefix} Native OAuth Provider ${i}`]
-    },
-    numberOfOAuthProviders
-  )
-  if (!skipAdmin) {
-    log.info('Adding admin users')
-    const numberOfAdmins = manager.numberOfAdmins || 1
-    for (let i = 1; i <= numberOfAdmins; i++) {
-      await apic.addMember(
-        'admin',
-        `${adminUsername}${i}`,
-        `${admin.password}`,
-        `${adminEmail}`,
-        ['administrator']
-      )
+    options.set('strict')
+    log.info(`Signing into admin with ${admin.username}:${admin.password}`)
+    await apic.signIn(admin.username, admin.password)
+    if (cleanOrg) {
+      log.info(`Deleting provider org ${orgName} if exists`)
+      await tryCatch(async () => {
+        const org = await apic.getProviderOrg(orgName)
+        await apic.delete([org])
+      })
     }
+
+    log.info(`Ensuring provider org ${orgTitle} does not already exist`)
+    const orgRes = await tryCatch(apic.getProviderOrg, orgName)
+    const addOrg = orgRes.err && orgRes.err.toString().includes('"status":404')
+    const user_name = `${manager.username}`
+
+    if (addOrg) {
+      log.info(`Checking if user "${user_name}" exists in provider scope`)
+      const user = await tryCatch(apic.getUser, 'manager', user_name)
+      const addUser = user.err && user.err.toString().includes('"status":404')
+      if (addUser) {
+        log.info(`Adding user ${user_name}`)
+        let managerEmail = `${user_name}+${user_name}@apic.ibm.com`
+        if (manager.email && manager.email !== '') {
+          managerEmail = manager.email
+        }
+        const userAdded = await apic.addUser(
+          'manager',
+          user_name,
+          user_name,
+          user_name,
+          managerEmail,
+          manager.password
+        )
+        if (!userAdded) log.throw(`Failed to add user ${user_name}`)
+      } else if (user.err) log.throw(user)
+      log.info(`Creating provider org ${orgTitle}`)
+      const addedOrg = await apic.createProviderOrg(orgTitle, user_name)
+      if (!addedOrg) log.throw(`Failed to create provider org ${orgTitle}`)
+    } else if (orgRes.err) log.throw(orgRes)
+
+    options.set('strict', false)
+    const oAuthPrefix = prefix || orgTitle
+    await concurrent(
+      apic.createOAuthProvider, // shared - admin scope (todo: move to manager scope)
+      (i) => {
+        if (randNum(0, 1) === 0)
+          return [
+            `${oAuthPrefix} Third-Party OAuth Provider ${i}`,
+            'third-party',
+          ]
+        return [`${oAuthPrefix} Native OAuth Provider ${i}`]
+      },
+      numberOfOAuthProviders
+    )
+    if (!skipAdmin) {
+      log.info('Adding admin users')
+      const numberOfAdmins = manager.numberOfAdmins || 1
+      for (let i = 1; i <= numberOfAdmins; i++) {
+        await apic.addMember(
+          'admin',
+          `${adminUsername}${i}`,
+          `${admin.password}`,
+          `${adminEmail}`,
+          ['administrator']
+        )
+      }
+    }
+
+    await apic.signOut()
   }
 
-  await apic.signOut()
   log.info(`Signing into manager with ${user_name}:${manager.password}`)
   await apim.signIn(user_name, manager.password)
 
