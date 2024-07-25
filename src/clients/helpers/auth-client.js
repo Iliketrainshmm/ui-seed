@@ -88,8 +88,8 @@ function setAuthToken(app, token) {
  *  provider of the app is used if none provided
  * @param {String} [providerOrg] provider org name (if app == consumer)
  * @param {String} [catalog] catalog name (if app == consumer)
- * @param {String} [SaaS] SaaS mode (if SaaS == true)
- * @param {String} [apikey] apikey (if SaaS == true)
+ * @param {String} [SaaS] SaaS mode (if SaaS === true)
+ * @param {String} [apikey] apikey (if SaaS === true)
  */
 async function signIn(
   app,
@@ -102,7 +102,7 @@ async function signIn(
   apikey
 ) {
   assertRequired({app})
-  if (SaaS == false) {
+  if (SaaS === false) {
     assertRequired({username, password})
   }
   else {
@@ -134,10 +134,13 @@ async function signIn(
     grant_type: 'password',
   }
 
-  if (SaaS == true) {
+  if (SaaS === true) {
     delete data.username
     delete data.password
-    data.apikey = apikey
+    data.api_key = apikey
+    data.grant_type = 'api_key'
+    data.client_id = '599b7aef-8841-4ee2-88a0-84d49c4d6ff2'
+    data.client_secret = '0ea28423-e73b-47d4-b40e-ddb45c48bb0c'
   }
 
   const endpoint = app === 'consumer' ? '/consumer-api/token' : '/api/token'

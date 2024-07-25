@@ -61,7 +61,13 @@ async function isHostReachable({host}) {
 async function getAppHosts({protocol, host}) {
   const addPrefix = await isHostReachable({host: `${protocol}manager.${host}`})
   const admin = `${protocol}${addPrefix ? `admin.${host}` : host}`
-  const manager = `${protocol}${addPrefix ? `manager.${host}` : host}`
+  if (SaaS === true) {
+    log.info(host)
+    manager = `${protocol}${addPrefix ? `platform-api.${host}` : host}`
+  }
+  else {
+    manager = `${protocol}${addPrefix ? `manager.${host}` : host}`
+  }
   const consumer = `${protocol}${addPrefix ? `consumer.${host}` : host}`
   const hostIsReachable = await isHostReachable({host: manager})
   if (!hostIsReachable) log.throw(`API host ${host} is unreachable`)
@@ -128,8 +134,12 @@ async function computeHosts() {
   const {API_HOST, cluster, namespace, protocol} = getBaseConfigs()
   let host = API_HOST && API_HOST.replace(/http.?:\/\/(manager\.|admin\.|consumer\.)?/, '')
   if (cluster && namespace && !useAPIHost)
-    host = `${namespace}.${cluster}.dev.ciondemand.com`
-
+    if (SaaS === false) {
+      host = `${namespace}.${cluster}.dev.ciondemand.com`
+    }
+    else {
+      host = `${region}.apiconnect.automation.ibm.com/api/token`
+    }
   // Skip computing hosts if already computed before
   if (configs.hosts && configs.baseHost === host) return
 

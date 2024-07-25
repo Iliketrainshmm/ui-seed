@@ -82,7 +82,7 @@ module.exports = async () => {
     SaaS = false
   }
 
-  if (SaaS == false) {
+  if (SaaS === false) {
     if (!skipAdmin)
       await setupAdmin(
         admin.username,
@@ -164,8 +164,14 @@ module.exports = async () => {
     await apic.signOut()
   }
 
-  log.info(`Signing into manager with ${user_name}:${manager.password}`)
-  await apim.signIn(user_name, manager.password, '', SaaS, manager.apikey)
+  if (SaaS === false) {
+    log.info(`Signing into manager with ${user_name}:${manager.password}`)
+  }
+  else {
+    log.info(`Signing into manager with apikey:${manager.apikey}`)
+    user_name = ''
+    await apim.signIn(user_name, manager.password, '', SaaS, manager.apikey)
+  }
 
   log.info('Consenting to cloud analytics')
   await apim.consentCloudAnalytics(orgName)
