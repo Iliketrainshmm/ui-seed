@@ -53,7 +53,13 @@ function getBaseConfigs() {
 }
 
 async function isHostReachable({host}) {
-  const options = {url: `${host}/api/me`, timeout: 10000}
+  if (SaaS === false) {
+    options = {url: `${host}/api/me`, timeout: 10000}
+  }
+  else {
+    options = {url: `${host}/api/token`, timeout: 10000}
+  }
+  log.info(options)
   const {res} = await tryCatch(send, options)
   return res && res.status === 401
 }
@@ -138,7 +144,7 @@ async function computeHosts() {
       host = `${namespace}.${cluster}.dev.ciondemand.com`
     }
     else {
-      host = `${region}.apiconnect.automation.ibm.com/api/token`
+      host = `platform-api.${region}.apiconnect.automation.ibm.com`
     }
   // Skip computing hosts if already computed before
   if (configs.hosts && configs.baseHost === host) return
